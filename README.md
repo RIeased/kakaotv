@@ -12,6 +12,9 @@
 - live는 화질 변경예정
 - live, vod 모든 페이지 볼수있도록 변경예정 
 
-osmc-rpi3, window테스트 
+#테스트 환경
+- osmc-rpi3
+- windows 10 
 
-version 0.5.0 2020-12-05
+#버전 히스토리
+- version 0.5.0 2020-12-05
