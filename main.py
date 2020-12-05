@@ -12,27 +12,20 @@ args = urlparse.parse_qs(sys.argv[2][1:])
 
 xbmcplugin.setContent(addon_handle, 'videos')
 
-def page(b):
-    a = b + 1
-    return a
-
-
 
 def build_url(query):
     return base_url + '?' + urllib.urlencode(query)
 
 
-def vod_videos(num):
+def vod_videos():
     
     url = 'https://tv.kakao.com/api/v1/ft/home/category/original'
-
 
     req = requests.get(url=url).json()
     respone = req["list"]
     
     VIDEOS = []
     VIDEO = dict()
-    VIDEO["page"] = req["hasMore"]
     for i in respone:
                 
         VIDEO["id"] = i["id"]
@@ -56,15 +49,14 @@ def vod_videos(num):
     return VIDEOS
 
 
-def live_videos(numb):
+def live_videos():
 
     url1 = 'https://tv.kakao.com/api/v1/ft/home/livelinks'
     load1 = {
         'tab': 'all',
         'fields': 'ccuCount,isShowCcuCount,thumbnailUrl,channel,live',
         'sort': 'CcuCount',
-        'size': '35',
-        'page': numb
+        'size': '40'
         }
 
     req1 = requests.get(url=url1, params=load1).json()
@@ -81,11 +73,12 @@ def live_videos(numb):
 
         urllive = 'https://tv.kakao.com/katz/v1/ft/livelink/{}/readyNplay'.format(i["id"])
         load2 = {
+            'player':'moment_html5',
             'profile': 'BASE',
             'contentType': 'HLS'   
         }
         req2 = requests.get(url=urllive, params=load2).json()
-        LIVE["play"] = req2["videoLocation"]["url"]
+        LIVE["play"] = req2['videoLocation']['url']
         li = xbmcgui.ListItem(LIVE["title"], iconImage=LIVE["thumb"])
         xbmcplugin.addDirectoryItem(handle=addon_handle, url=LIVE["play"], listitem=li, isFolder=False)
     
@@ -93,84 +86,25 @@ def live_videos(numb):
         
     return LIVES
 
+def folderlist(mode, foldername, name):
+    url = build_url({'mode': mode, 'foldername': foldername})
+    li = xbmcgui.ListItem(name, iconImage='DefaultFolder.png')
+    xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
+
 
 mode = args.get('mode', None)
 
 if mode is None:
-    url = build_url({'mode': 'VOD', 'foldername': 'VOD'})
-    li = xbmcgui.ListItem('VOD', iconImage='DefaultFolder.png')
-    xbmcplugin.addDirectoryItem(handle=addon_handle, url=url,
-                                listitem=li, isFolder=True)
-
-    url = build_url({'mode': 'LIVE', 'foldername': 'LIVE'})
-    li = xbmcgui.ListItem('LIVE', iconImage='DefaultFolder.png')
-    xbmcplugin.addDirectoryItem(handle=addon_handle, url=url,
-                                listitem=li, isFolder=True)
-    
+    folderlist('VOD', 'VOD', 'VOD')
+    folderlist('LIVE', 'LIVE', 'LIVE')
     xbmcplugin.endOfDirectory(addon_handle)
-
-elif mode[0] == 'NEXT_vod':
-    foldername = args['foldername'][0]
-    b = page(page(0))
-    pa = vod_videos(b)
-    for a in pa:    
-        if a["page"] == True:
-            url = build_url({'mode': 'NEXT_vod', 'foldername': 'NEXT'})
-            li = xbmcgui.ListItem('NEXT', iconImage='DefaultFolder.png')
-            xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-            xbmcplugin.endOfDirectory(addon_handle)
-    
-        elif a["page"] == False:
-            xbmcplugin.endOfDirectory(addon_handle)
-
-
-
-elif mode[0] == 'NEXT_live':
-    foldername = args['foldername'][0]
-    b = page(page(0))
-    pa = live_videos(b)
-    for a in pa:
-        try:    
-            if a["page"] == True:
-
-                url = build_url({'mode': 'NEXT_live', 'foldername': 'NEXT'})
-                li = xbmcgui.ListItem('NEXT', iconImage='DefaultFolder.png')
-                xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-                xbmcplugin.endOfDirectory(addon_handle) 
-
-            elif a["page"] == False:
-                xbmcplugin.endOfDirectory(addon_handle)
-        
-        except:
-            xbmcplugin.endOfDirectory(addon_handle)
-    xbmcplugin.endOfDirectory(addon_handle)
-    
-
 
 elif mode[0] == 'VOD':
     foldername = args['foldername'][0]
-    pa = vod_videos(page(1))
-    for a in pa:    
-        if a["page"] == True:
-            url = build_url({'mode': 'NEXT_vod', 'foldername': 'NEXT'})
-            li = xbmcgui.ListItem('NEXT', iconImage='DefaultFolder.png')
-            xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-            xbmcplugin.endOfDirectory(addon_handle)
-
-        elif a["page"] == False:
-            xbmcplugin.endOfDirectory(addon_handle)
+    vod_videos()
+    xbmcplugin.endOfDirectory(addon_handle)
 
 elif mode[0] == 'LIVE':
     foldername = args['foldername'][0]
-    ba = live_videos(page(1))
-    for b in ba:
-        if b["page"] == True:
-            url = build_url({'mode': 'NEXT_live', 'foldername': 'NEXT'})
-            li = xbmcgui.ListItem('NEXT', iconImage='DefaultFolder.png')
-            xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-            xbmcplugin.endOfDirectory(addon_handle)
-
-        elif b["page"] == False:
-            xbmcplugin.endOfDirectory(addon_handle)
-
-
+    live_videos()
+    xbmcplugin.endOfDirectory(addon_handle)
