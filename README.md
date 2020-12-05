@@ -10,8 +10,8 @@
 
 알집파일 이름은 plugin.video.kakaotv로 해주세요
 
-live는 화질 변경예정
-live, vod 모든 페이지 볼수있도록 변경예정 
+- live는 화질 변경예정
+- live, vod 모든 페이지 볼수있도록 변경예정 
 
 osmc-rpi3, window테스트 
 
