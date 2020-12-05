@@ -56,7 +56,7 @@ def live_videos():
         'tab': 'all',
         'fields': 'ccuCount,isShowCcuCount,thumbnailUrl,channel,live',
         'sort': 'CcuCount',
-        'size': '40'
+        'size': '30'
         }
 
     req1 = requests.get(url=url1, params=load1).json()
