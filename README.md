@@ -7,10 +7,12 @@
 - Search폴더로 검색가능합니다.
 
 #주의사항
-- 알집파일 이름은 plugin.video.kakaotv로 해주세요
+- 알집파일 이름은 plugin.video.kakaotv로 해주세요.
+- VOD에서 폴더형식 리스트는 로그인이 필요한 영상입니다.
 
 #변경예정
 - live는 화질 변경예정
+- 로그인 기능추가 예정
 
 #테스트 환경
 - osmc-rpi3
